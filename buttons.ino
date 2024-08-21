@@ -1,7 +1,4 @@
-// Button fields
-unsigned long debounceDelay = 50;  // The debounce time; increase if the output flickers
-
-bool btnPressed(struct button& b) {
+bool btnPressed(struct button& b, unsigned long debounceDelay=50) {
   // Read the state of the switch into a local variable
   int reading = digitalRead(b.pin);
   bool pressed = false;

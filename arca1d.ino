@@ -1,9 +1,9 @@
 #include <Adafruit_NeoPixel.h>
 
 // Define pins being used
-#define LED_PIN 9
-#define RIGHT_BUTTON_PIN 6
-#define LEFT_BUTTON_PIN 2
+#define LED_PIN 2
+#define RIGHT_BUTTON_PIN 10
+#define LEFT_BUTTON_PIN 3
 
 // How many pixels in the LED strip
 #define LED_COUNT 7
@@ -30,12 +30,11 @@ unsigned long ledPreviousMillis = 0;                   // Will store last time s
 int ledSpeed = 400;                                    // How fast to move the LEDs
 const int ledSpeedup = 25;                             // How quickly to increase the LED speed
 int maxLedSpeed = 75;                                  // Max speed the LEDs will move
-int ledPixelPos = -1;                                  // Keeps track of the current position of the stack
 int ledDirection = 1;                                  // Which direction the stack is moving.  1 is right, -1 is left
 
 // Menu fields
-bool playStacker = true;
-bool playPong = false;
+bool playStacker = false;
+bool playPong = true;
 
 // Blinking logic
 const int numBlinks = 3;                // Number of times to blink on success/fail
@@ -49,6 +48,14 @@ int level = 0;          // Current level
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("starting");
+
+  // analog input pin 0 is unconnected so random analog
+  // noise will cause the call to randomSeed() to generate
+  // different seed numbers each time the sketch runs.
+  // randomSeed() will then shuffle the random function.
+  randomSeed(millis());
+
   // Set all unused pins to INPUT_PULLUP to conserve power consumption
   for (int i = 2; i <= 19; i++) {
     if (i != LED_PIN || i != RIGHT_BUTTON_PIN || i != LEFT_BUTTON_PIN || i != 13) {  // ignore the pins we define and the internal LED pin
@@ -60,12 +67,6 @@ void setup() {
   pinMode(RIGHT_BUTTON_PIN, INPUT_PULLUP);
   pinMode(LEFT_BUTTON_PIN, INPUT_PULLUP);
 
-  // analog input pin 0 is unconnected so random analog
-  // noise will cause the call to randomSeed() to generate
-  // different seed numbers each time the sketch runs.
-  // randomSeed() will then shuffle the random function.
-  randomSeed(analogRead(0));
-
   // Setup LED strip
   strip.begin();            // Initialize NeoPixel strip object
   strip.show();             // Turn off all pixels
@@ -76,9 +77,9 @@ void loop() {
   if (playStacker) {
     stackerRun();
   } else if (playPong) {
-    pong();
+    pongRun();
   } else {
-    //menu logic
+    //Menu logic
   }
 
   strip.show();
